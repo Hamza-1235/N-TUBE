@@ -1,0 +1,512 @@
+document.addEventListener('DOMContentLoaded', async () => {
+    const apiKey = 'AIzaSyBKYnzRfcJ1k2V_kPWXPgP-550_idMFtfM';
+    const videoContainer = document.getElementById('video-cards');
+    const viewMoreButton = document.getElementById('view-more-btn');
+    const languageItems = document.querySelectorAll('.scrolling-bar li');
+    const user = auth.currentUser;
+    let allVideos = [];
+    let currentDisplayCount = 0;
+    const videosPerPage = 18;
+
+    // Function to fetch favorite videos from Firebase
+    async function getFavoriteVideos() {
+        if (user) {
+            const userId = user.uid;
+            const favoriteQuery = await getDocs(collection(db, "favorites"));
+            const favorites = new Set();
+
+            favoriteQuery.forEach((doc) => {
+                const video = doc.data();
+                if (video.userId === userId) {
+                    favorites.add(video.videoId);
+                }
+            });
+
+            return favorites;
+        }
+        return new Set();
+    }
+
+    const favoriteVideos = await getFavoriteVideos();
+
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            const savedLanguage = localStorage.getItem('selectedLanguage');
+            const selectedCategory = localStorage.getItem('selectedCategoryName');
+            const subcategories = JSON.parse(localStorage.getItem('subcategories')) || [];
+            const firstSubcategory = subcategories.length > 0 ? subcategories[0] : '';
+
+            if (savedLanguage) {
+                languageItems.forEach(async item => {
+                    if (item.textContent === savedLanguage) {
+                        item.classList.add('active-language');
+                        await fetchAndDisplayVideos(savedLanguage, favoriteVideos);
+                    }
+                });
+            }
+
+            if (selectedCategory && firstSubcategory) {
+                const subcategoryItems = document.querySelectorAll('.scrolling-bar li');
+                subcategoryItems.forEach(async item => {
+                    if (item.textContent.trim() === firstSubcategory.trim()) {
+                        item.classList.add('active-subcategory');
+                        await fetchAndDisplayVideos(firstSubcategory, favoriteVideos);
+                    }
+                });
+            }
+        } else {
+            console.log('User not authenticated.');
+        }
+    });
+
+    // Handle language item clicks
+    languageItems.forEach(item => {
+        item.addEventListener('click', async () => {
+            languageItems.forEach(li => {
+                li.classList.remove('active-language');
+            });
+            item.classList.add('active-language');
+
+            const selectedLanguage = item.textContent;
+            localStorage.setItem('selectedLanguage', selectedLanguage);
+
+            await fetchAndDisplayVideos(selectedLanguage, favoriteVideos);
+        });
+    });
+
+    // Wrapper function to fetch videos and display them
+    async function fetchAndDisplayVideos(language, favorites) {
+        currentDisplayCount = 0;
+        videoContainer.innerHTML = '';
+        await fetchVideos(language, favorites);
+        displayNextVideos();
+    }
+
+    // Fetch videos from YouTube API
+    async function fetchVideos(query, favorites) {
+        const maxResults = 50;
+        const apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=${maxResults}&q=${encodeURIComponent(query)}&type=video&videoDuration=long&key=${apiKey}`;
+
+        try {
+            const response = await fetch(apiUrl);
+            const data = await response.json();
+
+            if (data.items.length === 0) {
+                return;
+            }
+
+            const videoIds = data.items.map(item => item.id.videoId).join(',');
+
+            const statsUrl = `https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoIds}&key=${apiKey}`;
+            const statsResponse = await fetch(statsUrl);
+            const statsData = await statsResponse.json();
+
+            allVideos = data.items.map((item, index) => {
+                return {
+                    ...item,
+                    views: parseInt(statsData.items[index].statistics.viewCount, 10),
+                    isFavorite: favorites.has(item.id.videoId)
+                };
+            });
+
+            allVideos.sort((a, b) => b.views - a.views);
+        } catch (error) {
+            console.error('Error fetching videos:', error);
+        }
+    }
+
+    // Display the next set of videos
+    function displayNextVideos() {
+        const nextVideos = allVideos.slice(currentDisplayCount, currentDisplayCount + videosPerPage);
+        displayVideos(nextVideos);
+        currentDisplayCount += nextVideos.length;
+
+        if (currentDisplayCount >= allVideos.length) {
+            viewMoreButton.style.display = 'none';
+        } else {
+            viewMoreButton.style.display = 'block';
+        }
+
+        updateHeartIcons(favoriteVideos);
+    }
+
+    // Display videos in the DOM
+    function formatViews(views) {
+        if (views >= 1000000) {
+            return (views / 1000000).toFixed(1) + 'M';
+        } else if (views >= 1000) {
+            return (views / 1000).toFixed(1) + 'K';
+        } else {
+            return views;
+        }
+    }
+
+    function displayVideos(videos) {
+        videos.forEach(video => {
+            const videoId = video.id.videoId;
+            const thumbnail = video.snippet.thumbnails.high.url;
+            const title = video.snippet.title;
+            const channelTitle = video.snippet.channelTitle;
+            const channelId = video.snippet.channelId;
+            const views = formatViews(video.views);
+            const channelUrl = `https://www.youtube.com/channel/${channelId}`;
+            const heartClass = video.isFavorite ? 'text-danger' : 'text-muted';
+
+            const videoCard = `
+                <div class="col-md-4 mb-4 d-flex align-items-stretch">
+                    <div class="card">
+                        <img src="${thumbnail}" class="card-img-top" alt="${title}">
+                        <div class="card-body">
+                            <h5 class="card-title">${title}</h5>
+                            <p class="card-text">Channel: <a href="${channelUrl}" target="_blank">${channelTitle}</a></p>
+                            <p class="card-text-views">Views: ${views}</p>
+                            <button class="btn btn-danger view-video-btn" data-video-id="${videoId}">Watch Video</button>
+                            <button class="btn btn-light favorite-btn" data-video-id="${videoId}">
+                                <i class="fas fa-heart ${heartClass}"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            videoContainer.insertAdjacentHTML('beforeend', videoCard);
+        });
+
+        document.querySelectorAll('.view-video-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const videoId = e.target.getAttribute('data-video-id');
+                openVideoPopup(videoId);
+            });
+        });
+
+        document.querySelectorAll('.favorite-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const videoId = e.currentTarget.getAttribute('data-video-id');
+                toggleFavorite(videoId, e.currentTarget);
+            });
+        });
+    }
+
+    function openVideoPopup(videoId) {
+        const videoUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+        const videoFrame = document.getElementById('videoFrame');
+        videoFrame.src = videoUrl;
+        $('#videoModal').modal('show');
+    }
+
+    $('#videoModal').on('hidden.bs.modal', () => {
+        const videoFrame = document.getElementById('videoFrame');
+        videoFrame.src = '';
+    });
+
+    async function toggleFavorite(videoId, button) {
+        const user = auth.currentUser;
+        if (user) {
+            const userId = user.uid;
+            const favoriteDocRef = doc(db, "favorites", `${userId}_${videoId}`);
+            const docSnapshot = await getDoc(favoriteDocRef);
+
+            if (docSnapshot.exists()) {
+                await deleteDoc(favoriteDocRef);
+                button.querySelector('i').classList.remove('text-danger');
+                button.querySelector('i').classList.add('text-muted');
+                favoriteVideos.delete(videoId);
+                updateDashboardFavoriteStatus(videoId, false);
+            } else {
+                await setDoc(favoriteDocRef, { userId, videoId });
+                button.querySelector('i').classList.add('text-danger');
+                button.querySelector('i').classList.remove('text-muted');
+                favoriteVideos.add(videoId);
+                updateDashboardFavoriteStatus(videoId, true);
+            }
+        }
+    }
+
+    function updateDashboardFavoriteStatus(videoId, isFavorite) {
+        const videoCards = document.querySelectorAll('.card');
+        videoCards.forEach(card => {
+            const btn = card.querySelector('.favorite-btn');
+            if (btn && btn.getAttribute('data-video-id') === videoId) {
+                const icon = btn.querySelector('i');
+                if (isFavorite) {
+                    icon.classList.add('text-danger');
+                    icon.classList.remove('text-muted');
+                } else {
+                    icon.classList.remove('text-danger');
+                    icon.classList.add('text-muted');
+                }
+            }
+        });
+    }
+
+    viewMoreButton.addEventListener('click', displayNextVideos);
+});
+
+
+
+document.addEventListener('DOMContentLoaded', async () => {
+
+    const apiKey = 'AIzaSyDq5nF7aOk9zEzoPLHg5JZ06MJMlY7Hylo';
+    const videoContainer = document.getElementById('video-cards');
+    const viewMoreButton = document.getElementById('view-more-btn');
+    const languageItems = document.querySelectorAll('.scrolling-bar li');
+    const searchForm = document.getElementById('searchForm');
+    const searchInput = document.getElementById('searchInput');
+    const suggestionsBox = document.getElementById('suggestions');
+    const user = auth.currentUser;
+    let allVideos = []; 
+    let currentDisplayCount = 0; 
+    const videosPerPage = 18;
+
+    async function getFavoriteVideos() {
+        if (user) {
+            const userId = user.uid;
+            const favoriteQuery = await getDocs(collection(db, "favorites"));
+            const favorites = new Set();
+
+            favoriteQuery.forEach((doc) => {
+                const video = doc.data();
+                if (video.userId === userId) {
+                    favorites.add(video.videoId);
+                }
+            });
+
+            return favorites;
+        }
+        return new Set();
+    }
+
+    const favoriteVideos = await getFavoriteVideos();
+
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            const savedLanguage = localStorage.getItem('selectedLanguage');
+
+            if (savedLanguage) {
+                languageItems.forEach(async item => {
+                    if (item.textContent === savedLanguage) {
+                        item.classList.add('active-language');
+                        await fetchAndDisplayVideos(savedLanguage, favoriteVideos);
+                    }
+                });
+            }
+        } else {
+            console.log('User not authenticated.');
+        }
+    });
+
+    // Handle language item clicks
+    languageItems.forEach(item => {
+        item.addEventListener('click', async () => {
+            languageItems.forEach(li => {
+                li.classList.remove('active-language');
+            });
+            item.classList.add('active-language');
+
+            const selectedLanguage = item.textContent;
+            localStorage.setItem('selectedLanguage', selectedLanguage);
+
+            await fetchAndDisplayVideos(selectedLanguage, favoriteVideos);
+        });
+    });
+
+    
+    // Wrapper function to fetch videos and display them
+    async function fetchAndDisplayVideos(language, favorites) {
+        currentDisplayCount = 0; // Reset the counter
+        videoContainer.innerHTML = ''; // Clear existing videos
+        await fetchVideos(language, favorites); // Fetch new videos
+        displayNextVideos(); // Display the first set of videos
+    }
+
+    // Fetch videos from YouTube API based on a search query
+    async function fetchVideos(query, favorites) {
+        const maxResults = 50; // Number of videos to fetch
+        const apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=${maxResults}&q=${encodeURIComponent(query)}&type=video&key=${apiKey}`;
+
+        try {
+            const response = await fetch(apiUrl);
+            const data = await response.json();
+
+            if (data.items.length === 0) {
+                console.log('No videos found for this query.');
+                return;
+            }
+
+            const videoIds = data.items.map(item => item.id.videoId).join(',');
+
+            const statsUrl = `https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoIds}&key=${apiKey}`;
+            const statsResponse = await fetch(statsUrl);
+            const statsData = await statsResponse.json();
+
+            allVideos = data.items.map((item, index) => {
+                return {
+                    ...item,
+                    views: parseInt(statsData.items[index].statistics.viewCount, 10),
+                    isFavorite: favorites.has(item.id.videoId) // Check if videoId is in favorites
+                };
+            });
+
+            allVideos.sort((a, b) => b.views - a.views);
+
+            // Display the first batch of videos
+            displayNextVideos();
+
+        } catch (error) {
+            console.error('Error fetching videos:', error);
+        }
+    }
+
+    // Display the next batch of videos
+        function displayNextVideos() {
+        const nextVideos = allVideos.slice(currentDisplayCount, currentDisplayCount + videosPerPage);
+        nextVideos.forEach(video => {
+        const videoId = video.id.videoId;
+        const thumbnail = video.snippet.thumbnails.high.url;
+        const title = video.snippet.title;
+        const channelTitle = video.snippet.channelTitle;
+        const channelId = video.snippet.channelId;
+        const views = formatViews(video.views);
+        const channelUrl = `https://www.youtube.com/channel/${channelId}`;
+        const heartClass = video.isFavorite ? 'text-danger' : 'text-muted';
+
+        const videoCard = `
+            <div class="col-md-4 mb-4 d-flex align-items-stretch">
+                <div class="card">
+                    <img src="${thumbnail}" class="card-img-top" alt="${title}">
+                    <div class="card-body">
+                        <h5 class="card-title">${title}</h5>
+                        <p class="card-text">Channel: <a href="${channelUrl}" target="_blank">${channelTitle}</a></p>
+                        <p class="card-text-views">Views: ${views}</p>
+                        <button class="btn btn-danger view-video-btn" data-video-id="${videoId}">Watch Video</button>
+                        <button class="btn btn-light favorite-btn" data-video-id="${videoId}">
+                            <i class="fas fa-heart ${heartClass}"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        videoContainer.insertAdjacentHTML('beforeend', videoCard);
+    });
+
+    currentDisplayCount += nextVideos.length;
+
+    // Show or hide the "View More" button based on whether more videos are available
+    if (currentDisplayCount < allVideos.length) {
+        viewMoreButton.style.display = 'block';
+    } else {
+        viewMoreButton.style.display = 'none';
+    }
+
+    // Attach event listeners to the new buttons
+    document.querySelectorAll('.view-video-btn').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const videoId = e.target.getAttribute('data-video-id');
+            openVideoPopup(videoId);
+        });
+    });
+
+    document.querySelectorAll('.favorite-btn').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const videoId = e.currentTarget.getAttribute('data-video-id');
+            toggleFavorite(videoId, e.currentTarget);
+        });
+    });
+}
+
+    // Open video popup modal
+    function openVideoPopup(videoId) {
+        const videoUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+        const videoFrame = document.getElementById('videoFrame');
+        videoFrame.src = videoUrl;
+        $('#videoModal').modal('show');
+    }
+
+    $('#videoModal').on('hidden.bs.modal', () => {
+        const videoFrame = document.getElementById('videoFrame');
+        videoFrame.src = '';
+    });
+
+    // Toggle favorite status
+    async function toggleFavorite(videoId, button) {
+        const user = auth.currentUser;
+        if (user) {
+            const userId = user.uid;
+            const favoriteDocRef = doc(db, "favorites", `${userId}_${videoId}`);
+            const docSnapshot = await getDoc(favoriteDocRef);
+    
+            if (docSnapshot.exists()) {
+                await deleteDoc(favoriteDocRef);
+                button.querySelector('i').classList.remove('text-danger');
+                button.querySelector('i').classList.add('text-muted');
+            } else {
+                // Fetch video details from allVideos array
+                const videoData = allVideos.find(video => video.id.videoId === videoId);
+                if (videoData) {
+                    await setDoc(favoriteDocRef, {
+                        videoId,
+                        userId,
+                        title: videoData.snippet.title, // Store the video title
+                        thumbnail: videoData.snippet.thumbnails.high.url, // Store the video thumbnail URL
+                        channelTitle: videoData.snippet.channelTitle, // Store the channel title
+                        views: videoData.views, // Store the view count
+                        timestamp: new Date()
+                    });
+                    button.querySelector('i').classList.remove('text-muted');
+                    button.querySelector('i').classList.add('text-danger');
+                } else {
+                    console.error('Video data not found.');
+                }
+            }
+        } else {
+            console.log('User not authenticated.');
+        }
+    }
+
+    // Format views count
+    function formatViews(views) {
+        if (views >= 1e9) {
+            return (views / 1e9).toFixed(1) + 'B';
+        } else if (views >= 1e6) {
+            return (views / 1e6).toFixed(1) + 'M';
+        } else if (views >= 1e3) {
+            return (views / 1e3).toFixed(1) + 'K';
+        } else {
+            return views.toString();
+        }
+    }
+
+    // Search form submission event
+    searchForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const query = searchInput.value.trim();
+        if (query !== '') {
+            currentDisplayCount = 0; // Reset the display count
+            videoContainer.innerHTML = ''; // Clear the video container
+            fetchVideos(query, favoriteVideos); // Fetch and display the videos
+        }
+    });
+
+    // View more button click event
+       viewMoreButton.addEventListener('click', () => {
+        displayNextVideos(); // Display the next set of videos
+    });
+
+    // Logic to trigger content of the first subcategory when the page loads
+
+    const selectedCategory = localStorage.getItem('selectedCategory');
+    const selectedSubcategory = localStorage.getItem('selectedSubcategory');
+
+    if (selectedCategory) {
+        const subcategories = JSON.parse(localStorage.getItem('subcategories')) || [];
+
+        if (selectedSubcategory && subcategories.includes(selectedSubcategory)) {
+            // Fetch and display videos for the selected subcategory
+            await fetchAndDisplayVideos(selectedSubcategory, favoriteVideos);
+        } else if (subcategories.length > 0) {
+            // Default to the first subcategory if no subcategory is selected
+            localStorage.setItem('selectedSubcategory', subcategories[0]);
+            await fetchAndDisplayVideos(subcategories[0], favoriteVideos);
+        }
+    }
+
+});

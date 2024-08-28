@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categories</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="catagories.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="dashboard.html">
+                <h4><i class="fas fa-video"></i> N-<span class="hub" style="font-weight: bolder;">Tube</span></h4>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link  " href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active " href="categories.html"><i class="fa-solid fa-list"></i>
+                            Categories</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="favorites.html">
+                            <i class="fas fa-heart"></i> Favorites
+                            <span id="favorites-count" class="badge badge-pill badge-light"></span>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="profile.html"><i class="fas fa-user"></i> Profile</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <button class="btn btn-danger" href="#" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <h2 class=" heading text-center my-4 ">All Categories</h2>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                <div class="category-card bg-primary">
+                    <div class="category-icon">💻</div>
+                    <div class="category-title">Programming</div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                <div class="category-card bg-secondary">
+                    <div class="category-icon">🎨</div>
+                    <div class="category-title">Design & Creativity</div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                <div class="category-card bg-success">
+                    <div class="category-icon">📈</div>
+                    <div class="category-title">Business & Marketing</div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                <div class="category-card bg-danger">
+                    <div class="category-icon">🔧</div>
+                    <div class="category-title">Engineering</div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                <div class="category-card bg-warning">
+                    <div class="category-icon">🔬</div>
+                    <div class="category-title">Science & Mathematics</div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                <div class="category-card bg-info">
+                    <div class="category-icon">🌱</div>
+                    <div class="category-title">Personal Development</div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                <div class="category-card bg-dark">
+                    <div class="category-icon">🏋️</div>
+                    <div class="category-title">Health & Fitness</div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                <div class="category-card bg-light text-dark">
+                    <div class="category-icon">🎭</div>
+                    <div class="category-title">Arts & Humanities</div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                <div class="category-card bg-success">
+                    <div class="category-icon">🎓</div>
+                    <div class="category-title">Kids & Education</div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                <div class="category-card bg-secondary">
+                    <div class="category-icon">🔍</div>
+                    <div class="category-title">Miscellaneous</div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                <div class="category-card bg-primary">
+                    <div class="category-icon"><i class="fas fa-basketball"></i></div>
+                    <div class="category-title">Sports</div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                <div class="category-card bg-danger bg-secondary">
+                    <div class="category-icon"><i class="fas fa-music"></i></div>
+                    <div class="category-title">Entertainment</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script type="module" src="catagory.js"></script>
+    <script type="module" src="auth-check.js"></script>
+
+</body>
+
+</html>

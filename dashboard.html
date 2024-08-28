@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboardstayle.css">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="dashboard.html">
+                <h4><i class="fas fa-video"></i> N-<span class="hub" style="font-weight: bolder;">Tube</span></h4>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="dashboard.html"><i class="fas fa-tachometer-alt"></i>
+                            Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="catagories.html"><i class="fa-solid fa-list"></i>
+                            Catagories</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="favorites.html">
+                            <i class="fas fa-heart"></i> Favorites
+                            <span id="favorites-count" class="badge badge-pill badge-light"></span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="profile.html"><i class="fas fa-user"></i> Profile</a>
+                    </li>
+                </ul>
+
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="categoryDropdown" role="button"
+                            data-toggle="dropdown" aria-expanded="false">
+                            Select Category
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="categoryDropdown" id="mainCategoriesDropdown">
+                            <!-- Main categories will be inserted here -->
+                        </div>
+                    </li>
+                    <li class="nav-item mr-3">
+                        <form id="searchForm" class="form-inline">
+                            <input type="text" id="searchInput" class="form-control" autocomplete="off"
+                                placeholder="Search Language...">
+                            <div id="suggestions" class="dropdown-menu"></div>
+                        </form>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-danger" href="#" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Scrolling Bar -->
+    <div class="scrolling-bar-container">
+        <button id="scroll-left" class="scroll-btn">◀</button>
+        <div class="scrolling-wrapper">
+            <ul class="scrolling-bar">
+
+
+            </ul>
+        </div>
+        <button id="scroll-right" class="scroll-btn">▶</button>
+    </div>
+
+    <div class="container mt-4">
+        <div id="video-cards" class="row ">
+        </div>
+
+        <div class="center-button-container">
+            <button id="view-more-btn" class="btn btn-danger">View More</button>
+        </div>
+
+    </div>
+
+    <!-- Video Modal -->
+        <div id="videoModal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content" style="background-color: black;">
+                <div class="modal-header">
+                <h5 class="modal-title" style="color: white;">Video Player</h5>
+                <button type="button" class="close" data-dismiss="modal" style="color: white;" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">
+                <iframe id="videoFrame" src="" style="height: 350px; width: 100%;" allow="accelerometer; autoplay;"  allowfullscreen></iframe>
+                </div>
+            </div>
+            </div>
+        </div>
+        
+
+    <!-- ---------------------Foooter----------------- -->
+    <footer class="text-center text-lg-start text-white" style="background-color: #45526e">
+        <div class="container p-4 pb-0">
+            <section class="">
+                <div class="row">
+                    <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
+                        <h4 class="text-uppercase mb-4 font-weight-bold">
+                            <a
+                                href="https://www.linkedin.com/search/results/all/?heroEntityKey=urn%3Ali%3Aorganization%3A35602877&keywords=NAYYARTECH.AI&origin=ENTITY_SEARCH_HOME_HISTORY&sid=odM">NayyarTech.ai</a>
+                        </h4>
+                        <p>
+                            "The only way to learn a new programming language is by writing programs in it." – Dennis
+                            Ritchie
+                        </p>
+                    </div>
+                    <hr class="w-100 clearfix d-md-none" />
+                    <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
+                        <h6 class="text-uppercase mb-4 font-weight-bold">Products</h6>
+                        <p>
+                            <a class="text-white" href="dashboard.html">Dashboard</a>
+                        </p>
+                        <p>
+                            <a class="text-white" href="catagories.html">Catagories</a>
+                        </p>
+                        <p>
+                            <a class="text-white" href="favorites.html">Favorites</a>
+                        </p>
+                        <p>
+                            <a class="text-white" href="profile.html">Profile</a>
+                        </p>
+                    </div>
+
+                    <hr class="w-100 clearfix d-md-none " />
+
+                    <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mt-3">
+                        <h6 class="text-uppercase mb-4 font-weight-bold">
+                          <a href="developers.html" style="text-decoration: none; color: white;"> Developers </a>
+                        </h6>
+                        <p>
+                            <a href="https://www.linkedin.com/in/asad-abbas-347885309?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank"
+                                class="text-white">Asad Abbas</a>
+                        </p>
+                        <p>
+                            <a href="https://www.linkedin.com/in/mudasar-ahmad-72a5bb22a/" target="_blank" class="text-white">Mudasar
+                                Ahmad</a>
+                        </p>
+                        <p>
+                            <a href="https://www.linkedin.com/in/umair-sajid-327303275/" target="_blank"
+                                class="text-white">Umair Sajid</a>
+                        </p>
+                        <p>
+                            <a href="https://www.linkedin.com/in/hamza-ameen-5ba4b4230/" target="_blank" class="text-white">Hamza Ameen</a>
+                        </p>
+               
+                    </div>
+
+                    <hr class="w-100 clearfix d-md-none" />
+
+                    <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3">
+                        <h6 class="text-uppercase mb-4 font-weight-bold">Contact</h6>
+                        <p><i class="fas fa-envelope mailto:mr-3"></i>u7866learn@gmail.com</p>
+                        <p><i class="fas fa-envelope mailto:mr-3"></i>mudasar228013@gmail.com</p>
+                        <p><i class="fas fa-envelope mailto:mr-3"></i>imusajid@gmail.com</p>
+                        <p><i class="fas fa-envelope mailto:mr-3"></i>hamzarajpo514@gmail.com</p>
+                    </div>
+                </div>
+            </section>
+
+            <hr class="my-3">
+
+            <section class="p-3 pt-0">
+                <div class="row d-flex align-items-center">
+                    <div class="col-md-7 col-lg-8 text-center text-md-start">
+                        <div class="p-3">
+                            Copyright &copy; 2024 All Rights Reserved
+                            <a class="text-white" href="https://nayyartech.ai/" target="_blank">NayyarTech.ai</a>
+                        </div>
+                    </div>
+   
+                    <div class="col-md-5 col-lg-4 ml-lg-0 text-center text-md-end">
+                        <a href="https://www.linkedin.com/company/nayyar-tech/" target="_blank" class="btn btn-outline-light btn-floating m-1" class="text-white" role="button"><i
+                                class="fab fa-linkedin"></i></a>
+
+                        <a href="https://www.facebook.com/nayyartechai?mibextid=ZbWKwL" target="_blank" class="btn btn-outline-light btn-floating m-1" class="text-white" role="button"><i
+                                class="fab fa-facebook-f"></i></a>
+
+                        <a href="https://nayyartech.ai/" class="btn btn-outline-light btn-floating m-1" target
+                        ="text-white" role="button"><i
+                                class="fab fa-google"></i></a>
+
+                        <a href="https://www.instagram.com/nayyartech.ai?igsh=bzFyZXdpN3A5YXFy" target="_blank" class="btn btn-outline-light btn-floating m-1" class="text-white" role="button"><i
+                                class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </footer>
+  
+    <script type="module" src="dashboard.js"></script>
+    <script type="module" src="counter.js"></script>
+    <script type="module" src="auth-check.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCdkjImfuX2gnHDPglEJ7eD7C8zUxQIh9Q",
+            authDomain: "coding-hub-34d66.firebaseapp.com",
+            projectId: "coding-hub-34d66",
+            storageBucket: "coding-hub-34d66.appspot.com",
+            messagingSenderId: "640783204298",
+            appId: "1:640783204298:web:82e774afbde3e579895933"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        function updateUserEmail() {
+            const userEmailElement = document.getElementById('user-email');
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    const email = user.email;
+                    if (userEmailElement) {
+                        userEmailElement.textContent = email || 'No email available';
+                    }
+                } else {
+                    if (userEmailElement) {
+                        userEmailElement.textContent = 'Guest';
+                    }
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', updateUserEmail);
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const selectedCategory = localStorage.getItem('selectedCategory');
+            const subcategories = JSON.parse(localStorage.getItem('subcategories'));
+            const scrollingBar = document.querySelector('.scrolling-bar');
+            const dropdownToggle = document.querySelector('.dropdown-toggle');  
+            const dropdownMenu = document.querySelector('.dropdown-menu');  
+            
+            if (subcategories && scrollingBar) {
+                scrollingBar.innerHTML = '';  
+
+                subcategories.forEach(function (subcategory) {
+                    const li = document.createElement('li');
+                    li.textContent = subcategory;
+                    scrollingBar.appendChild(li);
+                });
+            }
+        });
+
+
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const subcategories = JSON.parse(localStorage.getItem('subcategories'));
+            const scrollingBar = document.querySelector('.scrolling-bar');
+
+            if (subcategories && scrollingBar) {
+                scrollingBar.innerHTML = '';  
+
+                subcategories.forEach(function (subcategory) {
+                    const li = document.createElement('li');
+                    li.textContent = subcategory;
+                    scrollingBar.appendChild(li);
+                });
+            }
+        });
+        document.addEventListener("DOMContentLoaded", function () {
+            const categories = {
+
+            };
+
+            const categoryDropdownMenu = document.querySelector('#categoryDropdown + .dropdown-menu');
+
+            for (let category in categories) {
+                const categoryItem = document.createElement('a');
+                categoryItem.className = 'dropdown-item';
+                categoryItem.textContent = category;
+                categoryItem.href = "#"; 
+                categoryItem.addEventListener('click', function () {
+                    localStorage.setItem('subcategories', JSON.stringify(categories[category]));
+                    localStorage.setItem('selectedCategoryName', category);
+
+                    console.log(`Category selected: ${category}`);
+                });
+                categoryDropdownMenu.appendChild(categoryItem);
+            }
+
+            const selectedCategory = localStorage.getItem('selectedCategoryName');
+            if (selectedCategory) {
+                document.getElementById('categoryDropdown').textContent = selectedCategory;
+            }
+        });
+
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const categories = {
+                "Programming": ["Html", "CSS", "JavaScript", "Bootstrap", "Java", "C Language", "C++", "C#", "Ruby on Rails", "Python", "swift", "Kotlin", "PHP", "React", "Database", "Jquery", "XML", "MySql", "Django", "Numpy", "Pandas", "Nodejs", "Nextjs", "React Native", "Angular", "Git", "MongoBD", "ASP", "SAAS", "VUE", "DSA"],
+                "Design & Creativity": ["Graphic Design", "UI/UX Design", "Animation & VFX", "Photography", "Video Editing", "Game Design", "3D Modeling", "Illustration & Digital Art"],
+                "Business & Marketing": ["Entrepreneurship", "Digital Marketing", " SEO & Content Writing", "Business Strategy", "Finance & Accounting", "Project Management", "Sales & Negotiation", "Human Resources"],
+                "Engineering": ["Electrical Engineering", "Mechanical Engineering", "Civil Engineering", "Aeronautical Engineering", "Chemical Engineering", "Biomedical Engineering", "Industrial Engineering", "Robotics"],
+                "Science & Mathematics": [" Physics", "Chemistry", "Biology", "Mathematics", "Environmental Science", "Astronomy & Space Science", "Geology", "Nanotechnology", "Bio Phyics", "Bio Chemistry"],
+                "Personal Development": ["Time Management", "Leadership Skills", "Public Speaking", "Emotional Intelligence", "Mindfulness & Meditation", "Productivity Hacks", "Career Development", "Language Learning"],
+                "Health & Fitness": ["Nutrition", "Physical Fitness", "Yoga & Meditation", "Mental Health", "Personal Training", "Sports Science", "Wellness Coaching", "Diet & Weight Loss"],
+                "Arts & Humanities": ["History ", "Philosophy", "Literature", "Music Theory", "Cultural Studies", "Religious Studies", "Languages & Linguistics"],
+                "Kids & Education": ["Quran reading Basic", "Cartoons & Animation", "Educational Games", "Storytelling & Reading", "Math for Kids", "Science Experiments", "Language Learning", "Art & Craft", "Coding for Kids"],
+                "Miscellaneous": ["Cooking & Culinary Arts", "Cooking & Culinary Arts", "DIY & Home Improvement", "Travel ", "Adventure", "Photography", "Pet Care & Training", "Fashion", "Beauty"],
+                "Sports": [
+                    "Football", "Cricket", "Hockey", "Baseball", "Basketball", "Tennis", "Golf", "Rugby", "Swimming", "Cycling", "Volleyball", "Badminton", "Athletics", "Boxing", "Wrestling"
+                ],
+                "Entertainment": ["Songs", "Comdey", "Dancing", "NETFLIX Seasons", "English Movies", "Dramas", "Punjabi Movies"],
+            };
+
+            const categoryMenu = document.getElementById('categoryMenu');
+            const selectedCategoryElement = document.getElementById('selected-category');
+
+            for (const category in categories) {
+                const categoryItem = document.createElement('a');
+                categoryItem.className = 'dropdown-item';
+                categoryItem.href = '#';
+                categoryItem.textContent = category;
+                categoryItem.addEventListener('click', function () {
+                    selectedCategoryElement.textContent = category;
+                    updateSubcategories(categories[category]);
+                });
+                // categoryMenu.appendChild(categoryItem);
+            }
+
+            function updateSubcategories(subcategories) {
+                const subcategoryList = document.getElementById('subcategory-list');
+                subcategoryList.innerHTML = ''; 
+                subcategories.forEach(subcategory => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = subcategory;
+                    subcategoryList.appendChild(listItem);
+                });
+            }
+        });
+    </script>
+
+</body>
+
+
+</html>

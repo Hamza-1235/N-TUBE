@@ -1,0 +1,58 @@
+.close {
+    color: white;
+}
+
+.close:hover {
+    color: white;
+}
+
+a {
+    color: red;
+    text-decoration: none;
+    background-color: transparent;
+}
+#favorites-count {
+    background-color: #dc3545; 
+    color: #fff; 
+    font-size: 0.8rem; 
+    border-radius: 50%; 
+    font-weight: bold; 
+    border: 1px solid #dc3545;
+}
+.dashboard-text {
+    color: #fff !important;
+}
+
+footer {
+    margin-top: 150px;
+    background-color: #333 !important;
+}
+
+hr {
+    background-color: white;
+}
+
+footer h4 a {
+    color: white;
+}
+
+footer h4 a:hover {
+    color: red;
+}
+
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+}
+
+.card-title {
+    transition: color 0.3s;
+}
+
+.card:hover .card-title {
+    color: #ff4757;
+}

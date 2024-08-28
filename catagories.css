@@ -1,0 +1,50 @@
+body {
+    background-color: #f8f9fa;
+}
+.category-card {
+    text-align: center;
+    padding: 40px;
+    color: white;
+    cursor: pointer;
+    border-radius: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.category-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+.category-icon {
+    font-size: 50px;
+    margin-bottom: 20px;
+}
+.category-title {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.row {
+    margin-bottom: 30px;
+}
+h2 {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+    margin-bottom: 40px;
+    margin-top: 0 !important;
+    /* background-color: red;     */
+}
+.heading{
+    background-color: red;
+    color: white;
+    margin: 0 !important;
+    margin-bottom: 40px !important;
+    padding: 18px 10px;
+}
+
+
+/* ---------------Responsive---------------- */
+@media (max-width: 600px){
+    .form-control{
+        margin-bottom: 10px;
+    }
+}
